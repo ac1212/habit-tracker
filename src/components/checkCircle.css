@@ -1,0 +1,43 @@
+@keyframes rotation {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(359deg);
+    }
+  }
+
+.common {
+    max-width: 36px;
+    max-height: 36px;
+    margin: 10px;
+}
+
+.unchecked {
+    animation: rotation 60s infinite linear;
+    filter: invert(91%) sepia(0%) saturate(1694%) hue-rotate(174deg) brightness(102%) contrast(70%);
+}
+
+.checked {
+    animation: rotation 15s infinite linear;
+}
+
+.checked-color0 {
+    filter: invert(65%) sepia(48%) saturate(2241%) hue-rotate(217deg) brightness(98%) contrast(85%);
+}
+
+.checked-color1 {
+    filter: invert(84%) sepia(39%) saturate(3697%) hue-rotate(184deg) brightness(103%) contrast(104%);
+}
+
+.checked-color2 {
+    filter: invert(97%) sepia(66%) saturate(772%) hue-rotate(57deg) brightness(93%) contrast(94%);
+}
+
+.checked-color3 {
+    filter: invert(95%) sepia(38%) saturate(3325%) hue-rotate(313deg) brightness(113%) contrast(107%);
+}
+
+.checked-color4 {
+    filter: invert(66%) sepia(94%) saturate(2152%) hue-rotate(320deg) brightness(100%) contrast(102%);
+}

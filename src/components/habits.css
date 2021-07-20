@@ -1,0 +1,20 @@
+#habit-div {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: stretch;
+    margin: 10px;
+    padding: 20px;
+    width: 300px;
+    border-radius: 200px;
+    font-family: Helvetica, Arial, sans-serif;
+    border: dashed 1px #ddd;
+}
+
+#habit-name-label {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    font-size: large;
+    color: #999;
+}

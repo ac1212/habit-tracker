@@ -1,0 +1,108 @@
+import Dexie from 'dexie';
+
+class LocalDataHelper {
+    constructor() {
+        this.initialized = false;
+    }
+
+    static #stripTime(date) {
+        var stripped_date = new Date(date);
+        stripped_date.setHours(0);
+        stripped_date.setMinutes(0);
+        stripped_date.setSeconds(0);
+        stripped_date.setMilliseconds(0);
+        return stripped_date;
+    }
+
+    async initializeIfNeeded() {
+        if (this.initialized) return;
+        console.log("Initializing LocalDataHelper");
+        this.db = new Dexie("HabitsDatabase");
+        this.db.version(1).stores({
+            habits: "habit_name",
+            status: "timestamp,date,habit_name"
+        });
+        try{
+            await this.db.open();
+        }
+        catch(e) {
+            console.error("Could not open database:\n" + e.stack);
+        }
+        const habit_count = await this.db.habits.toCollection().count();
+        if (habit_count === 0) {
+            console.log("No current habits. Resetting database.");
+            // Create sample habits.
+            const creation_timestamp = Date.now();
+            console.log('ct bef',creation_timestamp);
+            const creation_date = LocalDataHelper.#stripTime(creation_timestamp);
+            console.log('ct aft',creation_timestamp);
+            await this.db.habits.bulkAdd([
+                { habit_name: "Morning Meditation", time_created: creation_timestamp },
+                { habit_name: "Kriya", time_created: creation_timestamp },
+                { habit_name: "Padmasadhna", time_created: creation_timestamp },
+                { habit_name: "Exercise", time_created: creation_timestamp },
+                { habit_name: "Evening Meditation", time_created: creation_timestamp }
+            ]);
+            // demo.
+            await this.db.status.bulkAdd([
+                { timestamp: creation_timestamp+1, date: creation_date, habit_name: "Kriya", completed: true },
+                { timestamp: creation_timestamp+2, date: creation_date, habit_name: "Padmasadhna", completed: true },
+            ]);
+        }
+        this.initialized = true;
+    }
+
+    // Get a list of the active habits.
+    async getActiveHabits() {
+        await this.initializeIfNeeded();
+        return this.db.habits.toArray().then(function (arr) {
+            return arr.map((habit) => {return habit.habit_name;})
+        });
+    }
+
+    // Get the updates for all active habits for the provided date and next 6 days.
+    async getWeekUpdates(startDate) {
+        await this.initializeIfNeeded();
+        //TODO: handle if db not open
+        // Calculate time range of interest.
+        var startTime = new Date(startDate);
+        startTime.setDate(startTime.getDate()-startTime.getDay());
+        startTime = LocalDataHelper.#stripTime(startTime);
+        var endTime = new Date(startTime);
+        endTime.setDate(endTime.getDate()+7);
+        console.log("Looking for statuses between", startTime, " and ", endTime);
+        // Get habits.
+        const active_habits = await this.getActiveHabits();
+        // Get updates in the time range of interest.
+        const updates = await this.db.status.where("date").between(startTime, endTime);
+        console.log("this week updates:",await updates.toArray());
+        // Parse format.
+        var updates_formatted = {}
+        for (var j=0;j<active_habits.length;j++) {
+            var habit_updates = await updates.filter((u) => {return u.habit_name==active_habits[j];});
+            var week_status = [false, false, false, false, false, false, false];
+            for(var i=0;i<7;i++) {
+                var current_date = new Date(startTime);
+                current_date.setDate(current_date.getDate()+i);
+                // Get latest update in this date
+                var habit_updates_today = await habit_updates.filter((u)=>{return u.date.getTime()===current_date.getTime();});
+                var completed = false;
+                var ct = await habit_updates_today.count();
+                if (ct>0) {
+                    completed = (await habit_updates_today.last()).completed;
+                }
+                //console.log("on day ",i, " (",current_date.getMonth()+1,"/",current_date.getDate(),"), ",active_habits[j], " was completed:",completed);
+                week_status[i] = completed;
+            }
+            updates_formatted[active_habits[j]] = week_status;
+        }
+        return updates_formatted;
+    }
+
+    // Write or update a completion status.
+    async writeUpdate(date, habit_name, completion_status) {
+        await this.initializeIfNeeded();
+    }
+}
+
+export default LocalDataHelper;
