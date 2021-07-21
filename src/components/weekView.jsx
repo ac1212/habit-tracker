@@ -3,8 +3,8 @@ import HabitWeekly from "./habits";
 
 class WeekView extends Component {
 
-  handleHabitClick = (habit_name, dayOfWeek) => {
-    this.props.onHabitClick(habit_name, dayOfWeek);
+  handleHabitClick = (habit_name, dayOfWeek, completed) => {
+    this.props.onHabitClick(habit_name, dayOfWeek, completed);
     
   };
 
@@ -28,12 +28,12 @@ class WeekView extends Component {
         <thead>
             <tr>
                 <th></th>
+                <th>S</th>
                 <th>M</th>
                 <th>T</th>
                 <th>W</th>
                 <th>T</th>
                 <th>F</th>
-                <th>S</th>
                 <th>S</th>
             </tr>
         </thead>

@@ -4,8 +4,8 @@ import './habits.css'
 
 class HabitWeekly extends Component {
 
-  handleClick = (dayOfWeek) => {
-    this.props.onHabitClick(this.props.habit.habit_name, dayOfWeek);
+  handleClick = (dayOfWeek, completed) => {
+    this.props.onHabitClick(this.props.habit.habit_name, dayOfWeek, completed);
   }
 
   render() {

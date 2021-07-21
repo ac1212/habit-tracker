@@ -11,7 +11,7 @@ const CheckCircle = ({checked, dayOfWeek, onClick}) => {
       }
       src={checked ? checked_svg : unchecked_svg}
       alt={checked ? 'Y' : 'N'}
-      onClick={() => {onClick(dayOfWeek);} } />
+      onClick={() => {onClick(dayOfWeek, !checked);} } />
   );
 };
 
