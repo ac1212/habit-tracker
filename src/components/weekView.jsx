@@ -4,7 +4,16 @@ import HabitWeekly from "./habits";
 class WeekViewAddHabit extends Component {
   onClick() {
     // show add dialog, hide button.
+    const new_habit_name = window.prompt("Enter new habit name", "");
     // on enter, then result = await this.props.onHabitAdd(habit_name); on cancel, return the button and hide this.
+    this.props.onHabitAdd(new_habit_name).then(function (result) {
+      if(result) {
+        console.log("habit added successfully.");
+      }
+      else {
+        console.log("habit add failed.");
+      }
+    });
     // if result is habit already exists, show error
     // if result is success, close dialog. return button.
   };
@@ -18,11 +27,14 @@ class WeekViewAddHabit extends Component {
 
 class WeekView extends Component {
 
+  instance = this;
+
   handleHabitClick = (habit_name, dayOfWeek, completed) => {
     this.props.onHabitClick(habit_name, dayOfWeek, completed);
   };
 
-  async handleHabitAdd(habit_name) {
+  handleHabitAdd = async (habit_name) => {
+    console.log("this is ",this.props);
     return this.props.onHabitAdd(habit_name);
   }
 
