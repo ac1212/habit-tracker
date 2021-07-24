@@ -1,12 +1,30 @@
 import React, { Component } from "react";
 import HabitWeekly from "./habits";
 
+class WeekViewAddHabit extends Component {
+  onClick() {
+    // show add dialog, hide button.
+    // on enter, then result = await this.props.onHabitAdd(habit_name); on cancel, return the button and hide this.
+    // if result is habit already exists, show error
+    // if result is success, close dialog. return button.
+  };
+
+  render() {
+    return (
+      <button onClick={() => this.onClick()}>add</button>
+    );
+  }
+}
+
 class WeekView extends Component {
 
   handleHabitClick = (habit_name, dayOfWeek, completed) => {
     this.props.onHabitClick(habit_name, dayOfWeek, completed);
-    
   };
+
+  async handleHabitAdd(habit_name) {
+    return this.props.onHabitAdd(habit_name);
+  }
 
   render() {
     let habits = [];
@@ -24,6 +42,7 @@ class WeekView extends Component {
       );
     }
     return (
+      <div>
       <table>
         <thead>
             <tr>
@@ -39,6 +58,8 @@ class WeekView extends Component {
         </thead>
         <tbody>{habits}</tbody>
       </table>
+      <WeekViewAddHabit onHabitAdd={this.handleHabitAdd}/>
+      </div>
     );
   }
 }

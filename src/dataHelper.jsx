@@ -83,13 +83,12 @@ class LocalDataHelper {
                 var current_date = new Date(startTime);
                 current_date.setDate(current_date.getDate() + i);
                 // Get latest update in this date
-                var habit_updates_today = await habit_updates.filter((u) => { return u.date.getTime() === current_date.getTime(); });
+                var habit_updates_today = await habit_updates.filter((u) => { return u.date.getTime() === current_date.getTime(); }).sortBy("timestamp");
                 var completed = false;
-                var ct = await habit_updates_today.count();
-                if (ct > 0) {
-                    completed = (await habit_updates_today.last()).completed;
+                if (habit_updates_today.length > 0) {
+                    completed = habit_updates_today[habit_updates_today.length - 1].completed;
                 }
-                console.log("on day ",i, " (",current_date.getMonth()+1,"/",current_date.getDate(),"), ",active_habits[j], " was completed:",completed);
+                console.log("on day ", i, " (", current_date.getMonth() + 1, "/", current_date.getDate(), "), ", active_habits[j], " was completed:", completed);
                 week_status[i] = completed;
             }
             updates_formatted[active_habits[j]] = week_status;
@@ -99,10 +98,18 @@ class LocalDataHelper {
 
     // Write or update a completion status.
     async writeUpdate(date, habit_name, completed) {
-        console.log("called writeUpdate with ", {date: date, habit_name:habit_name, completed:completed});
+        console.log("called writeUpdate with ", { date: date, habit_name: habit_name, completed: completed });
         await this.initializeIfNeeded();
         const timestamp = Date.now();
         await this.db.status.add({ timestamp: timestamp, date: date, habit_name: habit_name, completed: completed });
+    }
+
+    // Add a habit.
+    async addHabit(habit_name) {
+        const creation_timestamp = Date.now();
+        //TODO: try-catch and return result failed because .. if failed. otherwise return success.
+        const result = await this.db.habits.add({ habit_name: habit_name, time_created: creation_timestamp });
+        return true;
     }
 }
 
