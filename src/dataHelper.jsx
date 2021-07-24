@@ -88,7 +88,7 @@ class LocalDataHelper {
                 if (habit_updates_today.length > 0) {
                     completed = habit_updates_today[habit_updates_today.length - 1].completed;
                 }
-                console.log("on day ", i, " (", current_date.getMonth() + 1, "/", current_date.getDate(), "), ", active_habits[j], " was completed:", completed);
+                //console.log("on day ", i, " (", current_date.getMonth() + 1, "/", current_date.getDate(), "), ", active_habits[j], " was completed:", completed);
                 week_status[i] = completed;
             }
             updates_formatted[active_habits[j]] = week_status;
@@ -108,7 +108,14 @@ class LocalDataHelper {
     async addHabit(habit_name) {
         const creation_timestamp = Date.now();
         //TODO: try-catch and return result failed because .. if failed. otherwise return success.
-        const result = await this.db.habits.add({ habit_name: habit_name, time_created: creation_timestamp });
+        try {
+            await this.db.habits.add({ habit_name: habit_name, time_created: creation_timestamp });
+        }
+        catch (e) {
+            //TODO: Assuming failure here must be because the key exists.
+            console.error(e);
+            return false;
+        }
         return true;
     }
 }

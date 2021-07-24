@@ -15,6 +15,7 @@ class HabitWeekly extends Component {
     });
     return (
       <tr>
+        <td><button>delete</button></td>
         <td>
           {this.props.habit.habit_name}
         </td>
