@@ -61,14 +61,22 @@ class Nushtracker extends Component {
     }
 
     handleHabitAdd = async (habit_name) => {
-        return this.localdb.addHabit(habit_name);
+        var result = this.localdb.addHabit(habit_name);
+        this.refreshStateFromLocalDb();
+        return result;
+    }
+
+    handleHabitDelete = async (habit_name) => {
+        var result = this.localdb.deleteHabit(habit_name);
+        this.refreshStateFromLocalDb();
+        return result;
     }
 
     render() {
         console.log("rendering with ",this.state.currentWeekView);
         // Render.
         return (
-            <WeekView habits={this.state.currentWeekView.state} onHabitClick={this.handleHabitClick} onHabitAdd={this.handleHabitAdd}/>
+            <WeekView habits={this.state.currentWeekView.state} onHabitClick={this.handleHabitClick} onHabitAdd={this.handleHabitAdd} onHabitDelete={this.handleHabitDelete}/>
         );
     }
 }

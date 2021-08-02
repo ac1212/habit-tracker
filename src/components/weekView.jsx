@@ -1,6 +1,18 @@
 import React, { Component } from "react";
 import HabitWeekly from "./habits";
 
+class WeekViewEdit extends Component {
+  onClick() {
+    this.props.onEditClick();
+  };
+
+  render() {
+    return (
+      <button onClick={() => this.onClick()}>edit</button>
+    );
+  }
+}
+
 class WeekViewAddHabit extends Component {
   onClick() {
     // show add dialog, hide button.
@@ -20,12 +32,19 @@ class WeekViewAddHabit extends Component {
 
   render() {
     return (
-      <button onClick={() => this.onClick()}>add</button>
-    );
+    <tr>
+      <td></td>
+      <td><button onClick={() => this.onClick()}>add</button></td>
+    </tr>);
   }
 }
 
 class WeekView extends Component {
+
+  constructor() {
+    super();
+    this.state = {editMode: false};
+  }
 
   instance = this;
 
@@ -34,11 +53,37 @@ class WeekView extends Component {
   };
 
   handleHabitAdd = async (habit_name) => {
-    console.log("this is ",this.props);
     return this.props.onHabitAdd(habit_name);
   }
 
+  handleHabitDelete = async (habit_name) => {
+    return this.props.onHabitDelete(habit_name);
+  }
+
+  handleEditClick = async () => {
+    var state = this.state;
+    state.editMode = !state.editMode;
+    this.setState(state);
+  }
+
   render() {
+    // Prep header.
+    function getHeader(showEditButtons) {
+      let header_cells = [];
+      header_cells.push(<th key="0"></th>);
+      if (showEditButtons) {
+        header_cells.push(<th key="1"></th>);
+      }
+      header_cells.push(<th  key="2">S</th>);
+      header_cells.push(<th  key="3">M</th>);
+      header_cells.push(<th  key="4">T</th>);
+      header_cells.push(<th  key="5">W</th>);
+      header_cells.push(<th  key="6">T</th>);
+      header_cells.push(<th  key="7">F</th>);
+      header_cells.push(<th  key="8">S</th>);
+      return header_cells;
+    };
+    // Prep habits.
     let habits = [];
     for (const [habit_name, completion_status] of Object.entries(
       this.props.habits
@@ -49,28 +94,26 @@ class WeekView extends Component {
             habit_name: habit_name,
             completion_status: completion_status,
           }}
+          showEditButtons={this.state.editMode}
           onHabitClick={this.handleHabitClick}
+          onHabitDelete={this.handleHabitDelete}
         />
       );
+    }
+    if (this.state.editMode) {
+      habits.push(<WeekViewAddHabit key="add_habit" onHabitAdd={this.handleHabitAdd}/>)
     }
     return (
       <div>
       <table>
         <thead>
-            <tr>
-                <th></th>
-                <th>S</th>
-                <th>M</th>
-                <th>T</th>
-                <th>W</th>
-                <th>T</th>
-                <th>F</th>
-                <th>S</th>
-            </tr>
+          <tr>
+            {getHeader(this.state.editMode)}
+          </tr>
         </thead>
         <tbody>{habits}</tbody>
       </table>
-      <WeekViewAddHabit onHabitAdd={this.handleHabitAdd}/>
+      <WeekViewEdit onEditClick={this.handleEditClick}/>
       </div>
     );
   }

@@ -8,14 +8,28 @@ class HabitWeekly extends Component {
     this.props.onHabitClick(this.props.habit.habit_name, dayOfWeek, completed);
   }
 
+  handleHabitDelete = () => {
+    return this.props.onHabitDelete(this.props.habit.habit_name);
+  }
+
+  getEditButtons = () => {
+    if (this.props.showEditButtons) {
+      return <td><button onClick={this.handleHabitDelete}>delete</button></td>;
+    }
+    else {
+      return;
+    }
+  }
+
   render() {
     let days = [];
     this.props.habit.completion_status.forEach((cs, idx) => {
       days.push(<td key={idx}><CheckCircle checked={cs} dayOfWeek={idx} onClick={this.handleClick}/></td>);
     });
+    
     return (
       <tr>
-        <td><button>delete</button></td>
+        {this.getEditButtons()}
         <td>
           {this.props.habit.habit_name}
         </td>

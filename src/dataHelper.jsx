@@ -118,6 +118,20 @@ class LocalDataHelper {
         }
         return true;
     }
+
+    // Delete a habit.
+    async deleteHabit(habit_name) {
+        try {
+            await this.db.habits.delete(habit_name);
+            // Clean out all associated updates.
+            await this.db.status.where("habit_name").equals(habit_name).delete();
+        }
+        catch (e) {
+            console.error(e);
+            return false;
+        }
+        return true;
+    }
 }
 
 export default LocalDataHelper;
