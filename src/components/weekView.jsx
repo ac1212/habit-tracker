@@ -1,20 +1,8 @@
 import React, { Component } from "react";
 import HabitWeekly from "./habits";
 
-class WeekViewEdit extends Component {
-  onClick() {
-    this.props.onEditClick();
-  };
-
-  render() {
-    return (
-      <button onClick={() => this.onClick()}>edit</button>
-    );
-  }
-}
-
 class WeekViewAddHabit extends Component {
-  onClick() {
+  onAdd() {
     // show add dialog, hide button.
     const new_habit_name = window.prompt("Enter new habit name", "");
     // on enter, then result = await this.props.onHabitAdd(habit_name); on cancel, return the button and hide this.
@@ -30,11 +18,22 @@ class WeekViewAddHabit extends Component {
     // if result is success, close dialog. return button.
   };
 
+  onEditClick() {
+    this.props.onEditClick()
+  }
+
   render() {
+    let cells = [];
+    if (this.props.editMode) {
+      cells.push(<td key="edit"><button onClick={() => this.onEditClick()}>cancel</button></td>);
+      cells.push(<td key="add"><button onClick={() => this.onAdd()}>add</button></td>);
+    }
+    else {
+      cells.push(<td key="edit"><button onClick={() => this.onEditClick()}>edit</button></td>);
+    }
     return (
     <tr>
-      <td></td>
-      <td><button onClick={() => this.onClick()}>add</button></td>
+      {cells}
     </tr>);
   }
 }
@@ -100,9 +99,7 @@ class WeekView extends Component {
         />
       );
     }
-    if (this.state.editMode) {
-      habits.push(<WeekViewAddHabit key="add_habit" onHabitAdd={this.handleHabitAdd}/>)
-    }
+    habits.push(<WeekViewAddHabit key="add_habit" editMode={this.state.editMode} onHabitAdd={this.handleHabitAdd} onEditClick={this.handleEditClick}/>)
     return (
       <div>
       <table>
@@ -113,7 +110,6 @@ class WeekView extends Component {
         </thead>
         <tbody>{habits}</tbody>
       </table>
-      <WeekViewEdit onEditClick={this.handleEditClick}/>
       </div>
     );
   }
