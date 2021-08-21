@@ -58,6 +58,16 @@ class LocalDataHelper {
         });
     }
 
+    // Return true if there are active habit updates before this time.
+    async olderUpdatesExist(date) {
+        return true;
+    }
+
+    // Return true if there are active habit updates after this time.
+    async newerUpdatesExist(date) {
+        return true;
+    }
+
     // Get the updates for all active habits for the provided date and next 6 days.
     async getWeekUpdates(startDate) {
         await this.initializeIfNeeded();

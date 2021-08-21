@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 import WeekView from "./weekView";
 import LocalDataHelper from '../dataHelper';
+import './nushtracker.css';
 
 
 class Nushtracker extends Component {
-    
+
 
     constructor() {
         super();
@@ -27,29 +28,34 @@ class Nushtracker extends Component {
         Padmasadhna: [false, true, true, true, true, true, true],
     };
 
-    refreshStateFromLocalDb() {
+    async refreshStateFromLocalDb(target_date) {
+        // Calculate start of the week.
+        var startTime = new Date(target_date);
+        startTime.setDate(startTime.getDate() - startTime.getDay());
+        startTime.setHours(0);
+        startTime.setMinutes(0);
+        startTime.setSeconds(0);
+        startTime.setMilliseconds(0);
+        // Calculate end of the week.
+        var endTime = new Date(startTime);
+        endTime.setDate(endTime.getDate() + 7);
         //TODO: show error if accessed before localdb inited.
-        const date_now = Date.now();
-        this.localdb.getWeekUpdates(date_now).then((s) => {
-            // Calculate start of the week.
-            var startTime = new Date(date_now);
-            startTime.setDate(startTime.getDate() - startTime.getDay());
-            startTime.setHours(0);
-            startTime.setMinutes(0);
-            startTime.setSeconds(0);
-            startTime.setMilliseconds(0);
-            this.setState({
-                currentWeekView: {
-                    startDate: startTime,
-                    state: s
-                }
-            })
+        const state = await this.localdb.getWeekUpdates(target_date);
+        const olderUpdatesExist = await this.localdb.olderUpdatesExist(startTime);
+        const newerUpdatesExist = await this.localdb.newerUpdatesExist(endTime);
+        this.setState({
+            currentWeekView: {
+                startDate: startTime,
+                state: state
+            },
+            olderUpdatesExist: olderUpdatesExist,
+            newerUpdatesExist: newerUpdatesExist
         });
     }
 
     componentDidMount() {
         this.localdb = new LocalDataHelper();
-        this.refreshStateFromLocalDb();
+        this.refreshStateFromLocalDb(Date.now());
     }
 
     handleHabitClick = (habit_name, dayOfWeek, completed) => {
@@ -72,11 +78,44 @@ class Nushtracker extends Component {
         return result;
     }
 
+    gotoPrevWeek = async () => {
+        var prevWeekStartTime = this.state.currentWeekView.startDate;
+        prevWeekStartTime.setDate(prevWeekStartTime.getDate() - 7);
+        await this.refreshStateFromLocalDb(prevWeekStartTime);
+    }
+
+    gotoNextWeek = async () => {
+        var nextWeekStartTime = this.state.currentWeekView.startDate;
+        nextWeekStartTime.setDate(nextWeekStartTime.getDate() + 7);
+        await this.refreshStateFromLocalDb(nextWeekStartTime);
+    }
+
     render() {
-        console.log("rendering with ",this.state.currentWeekView);
+        // Get current week.
+        const startDate = this.state.currentWeekView.startDate;
+        var endDate = new Date(startDate);
+        endDate.setDate(endDate.getDate() + 6);
+        // Set format.
+        var options = {weekday: "short", month: "short", day: "numeric"};
+        const current_date = new Date();
+        const current_year = current_date.getFullYear();
+        if (startDate.getFullYear()!=current_year || endDate.getFullYear()!=current_year) {
+            options.year = "numeric";
+        }
+        // Build the week display string.
+        var currentPeriodString = startDate.toLocaleDateString(undefined, options);
+        currentPeriodString += " - ";
+        currentPeriodString += endDate.toLocaleDateString(undefined, options);
         // Render.
         return (
-            <WeekView habits={this.state.currentWeekView.state} onHabitClick={this.handleHabitClick} onHabitAdd={this.handleHabitAdd} onHabitDelete={this.handleHabitDelete}/>
+            <div>
+                <div id="navigator">
+                    <button disabled={!this.state.olderUpdatesExist} onClick={this.gotoPrevWeek}>prev</button>
+                    <span>{currentPeriodString}</span>
+                    <button disabled={!this.state.newerUpdatesExist} onClick={this.gotoNextWeek}>next</button>
+                </div>
+                <WeekView habits={this.state.currentWeekView.state} onHabitClick={this.handleHabitClick} onHabitAdd={this.handleHabitAdd} onHabitDelete={this.handleHabitDelete} />
+            </div>
         );
     }
 }
