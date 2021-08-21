@@ -30,22 +30,22 @@ class Nushtracker extends Component {
 
     async refreshStateFromLocalDb(target_date) {
         // Calculate start of the week.
-        var startTime = new Date(target_date);
-        startTime.setDate(startTime.getDate() - startTime.getDay());
-        startTime.setHours(0);
-        startTime.setMinutes(0);
-        startTime.setSeconds(0);
-        startTime.setMilliseconds(0);
+        var startDate = new Date(target_date);
+        startDate.setDate(startDate.getDate() - startDate.getDay());
+        startDate.setHours(0);
+        startDate.setMinutes(0);
+        startDate.setSeconds(0);
+        startDate.setMilliseconds(0);
         // Calculate end of the week.
-        var endTime = new Date(startTime);
-        endTime.setDate(endTime.getDate() + 7);
+        var endDate = new Date(startDate);
+        endDate.setDate(endDate.getDate() + 6);
         //TODO: show error if accessed before localdb inited.
         const state = await this.localdb.getWeekUpdates(target_date);
-        const olderUpdatesExist = await this.localdb.olderUpdatesExist(startTime);
-        const newerUpdatesExist = await this.localdb.newerUpdatesExist(endTime);
+        const olderUpdatesExist = await this.localdb.olderUpdatesExist(startDate);
+        const newerUpdatesExist = await this.localdb.newerUpdatesExist(endDate);
         this.setState({
             currentWeekView: {
-                startDate: startTime,
+                startDate: startDate,
                 state: state
             },
             olderUpdatesExist: olderUpdatesExist,
@@ -63,18 +63,18 @@ class Nushtracker extends Component {
         var date = this.state.currentWeekView.startDate;
         date.setDate(date.getDate() + dayOfWeek);
         const instance = this;
-        this.localdb.writeUpdate(date, habit_name, completed).then(() => instance.refreshStateFromLocalDb());
+        this.localdb.writeUpdate(date, habit_name, completed).then(() => instance.refreshStateFromLocalDb(this.state.currentWeekView.startDate));
     }
 
     handleHabitAdd = async (habit_name) => {
         var result = this.localdb.addHabit(habit_name);
-        this.refreshStateFromLocalDb();
+        this.refreshStateFromLocalDb(this.state.currentWeekView.startDate);
         return result;
     }
 
     handleHabitDelete = async (habit_name) => {
         var result = this.localdb.deleteHabit(habit_name);
-        this.refreshStateFromLocalDb();
+        this.refreshStateFromLocalDb(this.state.currentWeekView.startDate);
         return result;
     }
 

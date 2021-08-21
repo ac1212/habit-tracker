@@ -5,7 +5,7 @@ class LocalDataHelper {
         this.initialized = false;
     }
 
-    static stripTIme(date) {
+    static stripTime(date) {
         var stripped_date = new Date(date);
         stripped_date.setHours(0);
         stripped_date.setMinutes(0);
@@ -33,7 +33,8 @@ class LocalDataHelper {
             console.log("No current habits. Resetting database.");
             // Create sample habits.
             const creation_timestamp = Date.now();
-            const creation_date = LocalDataHelper.stripTIme(creation_timestamp);
+            const creation_date = LocalDataHelper.stripTime(creation_timestamp);
+            const creation_date2 = LocalDataHelper.stripTime(creation_timestamp+ 8*24*60*60*1000);
             await this.db.habits.bulkAdd([
                 { habit_name: "Morning Meditation", time_created: creation_timestamp },
                 { habit_name: "Kriya", time_created: creation_timestamp },
@@ -45,6 +46,7 @@ class LocalDataHelper {
             await this.db.status.bulkAdd([
                 { timestamp: creation_timestamp + 1, date: creation_date, habit_name: "Kriya", completed: true },
                 { timestamp: creation_timestamp + 2, date: creation_date, habit_name: "Padmasadhna", completed: true },
+                { timestamp: creation_timestamp + 3, date: creation_date2, habit_name: "Padmasadhna", completed: true },
             ]);
         }
         this.initialized = true;
@@ -58,14 +60,14 @@ class LocalDataHelper {
         });
     }
 
-    // Return true if there are active habit updates before this time.
+    // Return true if there are active habit updates before this date.
     async olderUpdatesExist(date) {
-        return true;
+        return await this.db.status.where("date").below(date).limit(1).count()>0;
     }
 
-    // Return true if there are active habit updates after this time.
+    // Return true if there are active habit updates after this date.
     async newerUpdatesExist(date) {
-        return true;
+        return await this.db.status.where("date").above(date).limit(1).count()>0;
     }
 
     // Get the updates for all active habits for the provided date and next 6 days.
@@ -75,7 +77,7 @@ class LocalDataHelper {
         // Calculate time range of interest.
         var startTime = new Date(startDate);
         startTime.setDate(startTime.getDate() - startTime.getDay());
-        startTime = LocalDataHelper.stripTIme(startTime);
+        startTime = LocalDataHelper.stripTime(startTime);
         var endTime = new Date(startTime);
         endTime.setDate(endTime.getDate() + 7);
         console.log("Looking for statuses between", startTime, " and ", endTime);
