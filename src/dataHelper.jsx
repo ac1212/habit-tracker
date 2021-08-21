@@ -62,12 +62,14 @@ class LocalDataHelper {
 
     // Return true if there are active habit updates before this date.
     async olderUpdatesExist(date) {
-        return await this.db.status.where("date").below(date).limit(1).count()>0;
+        const active_habits = await this.getActiveHabits();
+        return await this.db.status.where("habit_name").anyOf(active_habits).and(function (s) { return s.date < date;}).count() > 0;
     }
 
     // Return true if there are active habit updates after this date.
     async newerUpdatesExist(date) {
-        return await this.db.status.where("date").above(date).limit(1).count()>0;
+        const active_habits = await this.getActiveHabits();
+        return await this.db.status.where("habit_name").anyOf(active_habits).and(function (s) { return s.date > date;}).count() > 0;
     }
 
     // Get the updates for all active habits for the provided date and next 6 days.
