@@ -99,7 +99,7 @@ class Nushtracker extends Component {
         var options = {weekday: "short", month: "short", day: "numeric"};
         const current_date = new Date();
         const current_year = current_date.getFullYear();
-        if (startDate.getFullYear()!=current_year || endDate.getFullYear()!=current_year) {
+        if (startDate.getFullYear()!==current_year || endDate.getFullYear()!==current_year) {
             options.year = "numeric";
         }
         // Build the week display string.

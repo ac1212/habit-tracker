@@ -1,4 +1,5 @@
 import Dexie from 'dexie';
+import moment from 'moment';
 
 class LocalDataHelper {
     constructor() {
@@ -16,11 +17,10 @@ class LocalDataHelper {
 
     async initializeIfNeeded() {
         if (this.initialized) return;
-        console.log("Initializing LocalDataHelper");
         this.db = new Dexie("HabitsDatabase");
         this.db.version(1).stores({
             habits: "habit_name",
-            status: "timestamp,date,habit_name"
+            status: "[date+habit_name],date,habit_name,&timestamp"
         });
         try {
             await this.db.open();
@@ -44,9 +44,9 @@ class LocalDataHelper {
             ]);
             // demo.
             await this.db.status.bulkAdd([
-                { timestamp: creation_timestamp + 1, date: creation_date, habit_name: "Kriya", completed: true },
-                { timestamp: creation_timestamp + 2, date: creation_date, habit_name: "Padmasadhna", completed: true },
-                { timestamp: creation_timestamp + 3, date: creation_date2, habit_name: "Padmasadhna", completed: true },
+                { date: creation_date, habit_name: "Kriya", timestamp: creation_timestamp + 1, completed: true },
+                { date: creation_date, habit_name: "Padmasadhna", timestamp: creation_timestamp + 2, completed: true },
+                { date: creation_date2, habit_name: "Padmasadhna", timestamp: creation_timestamp + 3, completed: true },
             ]);
         }
         this.initialized = true;
@@ -55,9 +55,8 @@ class LocalDataHelper {
     // Get a list of the active habits.
     async getActiveHabits() {
         await this.initializeIfNeeded();
-        return this.db.habits.toArray().then(function (arr) {
-            return arr.map((habit) => { return habit.habit_name; })
-        });
+        const habits = await this.db.habits.toArray();
+        return habits.map((habit) => { return habit.habit_name; });
     }
 
     // Return true if there are active habit updates before this date.
@@ -82,40 +81,38 @@ class LocalDataHelper {
         startTime = LocalDataHelper.stripTime(startTime);
         var endTime = new Date(startTime);
         endTime.setDate(endTime.getDate() + 7);
-        console.log("Looking for statuses between", startTime, " and ", endTime);
         // Get habits.
         const active_habits = await this.getActiveHabits();
         // Get updates in the time range of interest.
-        const updates = await this.db.status.where("date").between(startTime, endTime);
-        console.log("this week updates:", await updates.toArray());
-        // Parse format.
+        const updates = await this.db.status.where("date").between(startTime, endTime).toArray();
+        // Initialize parsed output.
         var updates_formatted = {}
-        for (var j = 0; j < active_habits.length; j++) {
-            var habit_updates = await updates.filter((u) => { return u.habit_name == active_habits[j]; });
-            var week_status = [false, false, false, false, false, false, false];
-            for (var i = 0; i < 7; i++) {
-                var current_date = new Date(startTime);
-                current_date.setDate(current_date.getDate() + i);
-                // Get latest update in this date
-                var habit_updates_today = await habit_updates.filter((u) => { return u.date.getTime() === current_date.getTime(); }).sortBy("timestamp");
-                var completed = false;
-                if (habit_updates_today.length > 0) {
-                    completed = habit_updates_today[habit_updates_today.length - 1].completed;
-                }
-                //console.log("on day ", i, " (", current_date.getMonth() + 1, "/", current_date.getDate(), "), ", active_habits[j], " was completed:", completed);
-                week_status[i] = completed;
+        active_habits.forEach((active_habit) => { updates_formatted[active_habit]= [false, false, false, false, false, false, false]; });
+        // Fill in all updates.
+        for (const update of updates) {
+            if (update.habit_name in updates_formatted) {
+                // Calculate difference from start date.
+                const dayOfWeek = moment(update.date).diff(moment(startTime),'days');
+                // Update cell.
+                updates_formatted[update.habit_name][dayOfWeek] = update.completed;
             }
-            updates_formatted[active_habits[j]] = week_status;
         }
         return updates_formatted;
     }
 
     // Write or update a completion status.
     async writeUpdate(date, habit_name, completed) {
-        console.log("called writeUpdate with ", { date: date, habit_name: habit_name, completed: completed });
         await this.initializeIfNeeded();
         const timestamp = Date.now();
-        await this.db.status.add({ timestamp: timestamp, date: date, habit_name: habit_name, completed: completed });
+        // Check for existing status for this habit on this day.
+        var existing_update = await this.db.status.where({habit_name: habit_name, date: date}).first();
+        if (typeof existing_update !== 'undefined') { // If there is an existing older status, update it.
+            if (existing_update.timestamp<timestamp) {
+              await this.db.status.put({ timestamp: timestamp, date: date, habit_name: habit_name, completed: completed });
+            }
+        } else { // No existing status. Add.
+            await this.db.status.add({ timestamp: timestamp, date: date, habit_name: habit_name, completed: completed });
+        }
     }
 
     // Add a habit.
