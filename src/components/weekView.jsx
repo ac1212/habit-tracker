@@ -67,19 +67,22 @@ class WeekView extends Component {
 
   render() {
     // Prep header.
-    function getHeader(showEditButtons) {
+    function getHeader(showEditButtons, showHeader) {
       let header_cells = [];
       header_cells.push(<th key="0"></th>);
       if (showEditButtons) {
-        header_cells.push(<th key="1"></th>);
+        header_cells.push(<th key="1">&nbsp;</th>);
       }
-      header_cells.push(<th  key="2">S</th>);
-      header_cells.push(<th  key="3">M</th>);
-      header_cells.push(<th  key="4">T</th>);
-      header_cells.push(<th  key="5">W</th>);
-      header_cells.push(<th  key="6">T</th>);
-      header_cells.push(<th  key="7">F</th>);
-      header_cells.push(<th  key="8">S</th>);
+      if(showHeader)
+      {
+        header_cells.push(<th  key="2">S</th>);
+        header_cells.push(<th  key="3">M</th>);
+        header_cells.push(<th  key="4">T</th>);
+        header_cells.push(<th  key="5">W</th>);
+        header_cells.push(<th  key="6">T</th>);
+        header_cells.push(<th  key="7">F</th>);
+        header_cells.push(<th  key="8">S</th>);
+      }
       return header_cells;
     };
     // Prep habits.
@@ -105,7 +108,7 @@ class WeekView extends Component {
       <table>
         <thead>
           <tr>
-            {getHeader(this.state.editMode)}
+            {getHeader(this.state.editMode, !this.state.editMode && Object.keys(this.props.habits).length>0)}
           </tr>
         </thead>
         <tbody>{habits}</tbody>

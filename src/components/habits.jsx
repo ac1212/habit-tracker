@@ -23,10 +23,11 @@ class HabitWeekly extends Component {
 
   render() {
     let days = [];
-    this.props.habit.completion_status.forEach((cs, idx) => {
-      days.push(<td key={idx}><CheckCircle checked={cs} dayOfWeek={idx} onClick={this.handleClick}/></td>);
-    });
-    
+    if (!this.props.showEditButtons) {
+      this.props.habit.completion_status.forEach((cs, idx) => {
+        days.push(<td key={idx}><CheckCircle checked={cs} dayOfWeek={idx} onClick={this.handleClick}/></td>);
+      });
+    }
     return (
       <tr>
         {this.getEditButtons()}
