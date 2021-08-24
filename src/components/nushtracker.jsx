@@ -4,6 +4,7 @@ import LocalDataHelper from '../dataHelper';
 import './nushtracker.css';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+import { MuiThemeProvider, createTheme } from '@material-ui/core/styles';
 
 
 class Nushtracker extends Component {
@@ -24,6 +25,17 @@ class Nushtracker extends Component {
             }
         };
     }
+
+    theme = createTheme({
+        palette: {
+          primary: {
+              main: '#24B0E3'
+          },
+          secondary: {
+            main: '#0000FF'
+          }
+        }
+      });
 
     defaultWeekViewState = {
         Kriya: [true, true, false, false, true, true, false],
@@ -116,16 +128,16 @@ class Nushtracker extends Component {
         currentPeriodString += endDate.toLocaleDateString(undefined, options);
         // Render.
         return (
+            <MuiThemeProvider theme={this.theme}>
             <div>
                 <div id="navigator">
-                    {/* <button disabled={!this.state.olderUpdatesExist} onClick={this.gotoPrevWeek}>prev</button> */}
-                    <ArrowBackIosIcon onClick={this.gotoPrevWeek}/>
+                    <ArrowBackIosIcon color={(this.state.olderUpdatesExist ? "primary" : "disabled")} onClick={this.gotoPrevWeek}/>
                     <span>{currentPeriodString}</span>
-                    {/* <button disabled={!this.state.newerUpdatesExist} onClick={this.gotoNextWeek}>next</button> */}
-                    <ArrowForwardIosIcon onClick={this.gotoNextWeek}/>
+                    <ArrowForwardIosIcon color={(this.state.newerUpdatesExist ? "primary" : "disabled")} onClick={this.gotoNextWeek}/>
                 </div>
                 <WeekView habits={this.state.currentWeekView.state} onHabitClick={this.handleHabitClick} onHabitAdd={this.handleHabitAdd} onHabitDelete={this.handleHabitDelete} />
             </div>
+            </MuiThemeProvider>
         );
     }
 }

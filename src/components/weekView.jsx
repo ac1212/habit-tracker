@@ -26,11 +26,11 @@ class WeekViewAddHabit extends Component {
   render() {
     let cells = [];
     if (this.props.editMode) {
-      cells.push(<td key="cancel"><CloseIcon onClick={() => this.onEditClick()} /></td>);
-      cells.push(<td key="add"><AddIcon onClick={() => this.onAdd()} /></td>);
+      cells.push(<td key="cancel"><CloseIcon color="primary" onClick={() => this.onEditClick()} /></td>);
+      cells.push(<td key="add"><AddIcon color="primary" onClick={() => this.onAdd()} /></td>);
     }
     else {
-      cells.push(<td key="edit"><EditIcon onClick={() => this.onEditClick()}/></td>);
+      cells.push(<td key="edit"><EditIcon color="red" onClick={() => this.onEditClick()}/></td>);
     }
     return (
     <tr>
