@@ -1,5 +1,8 @@
 import React, { Component } from "react";
 import HabitWeekly from "./habits";
+import EditIcon from '@material-ui/icons/Edit';
+import AddIcon from '@material-ui/icons/Add';
+import CloseIcon from '@material-ui/icons/Close';
 
 class WeekViewAddHabit extends Component {
   onAdd() {
@@ -14,8 +17,6 @@ class WeekViewAddHabit extends Component {
         console.log("habit add failed.");
       }
     });
-    // if result is habit already exists, show error
-    // if result is success, close dialog. return button.
   };
 
   onEditClick() {
@@ -25,11 +26,11 @@ class WeekViewAddHabit extends Component {
   render() {
     let cells = [];
     if (this.props.editMode) {
-      cells.push(<td key="edit"><button onClick={() => this.onEditClick()}>cancel</button></td>);
-      cells.push(<td key="add"><button onClick={() => this.onAdd()}>add</button></td>);
+      cells.push(<td key="cancel"><CloseIcon onClick={() => this.onEditClick()} /></td>);
+      cells.push(<td key="add"><AddIcon onClick={() => this.onAdd()} /></td>);
     }
     else {
-      cells.push(<td key="edit"><button onClick={() => this.onEditClick()}>edit</button></td>);
+      cells.push(<td key="edit"><EditIcon onClick={() => this.onEditClick()}/></td>);
     }
     return (
     <tr>

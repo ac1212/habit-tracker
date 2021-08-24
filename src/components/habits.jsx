@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import CheckCircle from './checkCircle';
 import './habits.css'
+import DeleteIcon from '@material-ui/icons/Delete';
 
 class HabitWeekly extends Component {
 
@@ -14,7 +15,7 @@ class HabitWeekly extends Component {
 
   getEditButtons = () => {
     if (this.props.showEditButtons) {
-      return <td><button onClick={this.handleHabitDelete}>delete</button></td>;
+      return <td><DeleteIcon onClick={this.handleHabitDelete} /></td>;
     }
     else {
       return;

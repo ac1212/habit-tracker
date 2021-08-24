@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import WeekView from "./weekView";
 import LocalDataHelper from '../dataHelper';
 import './nushtracker.css';
+import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
+import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 
 
 class Nushtracker extends Component {
@@ -79,12 +81,18 @@ class Nushtracker extends Component {
     }
 
     gotoPrevWeek = async () => {
+        if (!this.state.olderUpdatesExist) {
+            return
+        }
         var prevWeekStartTime = this.state.currentWeekView.startDate;
         prevWeekStartTime.setDate(prevWeekStartTime.getDate() - 7);
         await this.refreshStateFromLocalDb(prevWeekStartTime);
     }
 
     gotoNextWeek = async () => {
+        if (!this.state.newerUpdatesExist) {
+            return
+        }
         var nextWeekStartTime = this.state.currentWeekView.startDate;
         nextWeekStartTime.setDate(nextWeekStartTime.getDate() + 7);
         await this.refreshStateFromLocalDb(nextWeekStartTime);
@@ -110,9 +118,11 @@ class Nushtracker extends Component {
         return (
             <div>
                 <div id="navigator">
-                    <button disabled={!this.state.olderUpdatesExist} onClick={this.gotoPrevWeek}>prev</button>
+                    {/* <button disabled={!this.state.olderUpdatesExist} onClick={this.gotoPrevWeek}>prev</button> */}
+                    <ArrowBackIosIcon onClick={this.gotoPrevWeek}/>
                     <span>{currentPeriodString}</span>
-                    <button disabled={!this.state.newerUpdatesExist} onClick={this.gotoNextWeek}>next</button>
+                    {/* <button disabled={!this.state.newerUpdatesExist} onClick={this.gotoNextWeek}>next</button> */}
+                    <ArrowForwardIosIcon onClick={this.gotoNextWeek}/>
                 </div>
                 <WeekView habits={this.state.currentWeekView.state} onHabitClick={this.handleHabitClick} onHabitAdd={this.handleHabitAdd} onHabitDelete={this.handleHabitDelete} />
             </div>
