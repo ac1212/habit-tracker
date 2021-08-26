@@ -3,6 +3,7 @@ import HabitWeekly from "./habits";
 import EditIcon from '@material-ui/icons/Edit';
 import AddIcon from '@material-ui/icons/Add';
 import CloseIcon from '@material-ui/icons/Close';
+import './weekView.css';
 
 class WeekViewAddHabit extends Component {
   onAdd() {
@@ -105,7 +106,6 @@ class WeekView extends Component {
     }
     habits.push(<WeekViewAddHabit key="add_habit" editMode={this.state.editMode} onHabitAdd={this.handleHabitAdd} onEditClick={this.handleEditClick}/>)
     return (
-      <div>
       <table>
         <thead>
           <tr>
@@ -114,7 +114,6 @@ class WeekView extends Component {
         </thead>
         <tbody>{habits}</tbody>
       </table>
-      </div>
     );
   }
 }

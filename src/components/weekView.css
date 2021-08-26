@@ -1,0 +1,11 @@
+table {
+    table-layout: auto;
+    border: 1px solid black;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+
+td:first-child {
+    width: 100%;
+    vertical-align: center;
+}

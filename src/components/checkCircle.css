@@ -8,9 +8,9 @@
   }
 
 .common {
-    max-width: 36px;
-    max-height: 36px;
-    margin: 10px;
+    width: clamp(1em, 2em ,36px);
+    height: clamp(1em, 2em ,36px);
+    margin: 0.5em;
 }
 
 .unchecked {

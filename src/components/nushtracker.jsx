@@ -28,14 +28,14 @@ class Nushtracker extends Component {
 
     theme = createTheme({
         palette: {
-          primary: {
-              main: '#24B0E3'
-          },
-          secondary: {
-            main: '#0000FF'
-          }
+            primary: {
+                main: '#24B0E3'
+            },
+            secondary: {
+                main: '#0000FF'
+            }
         }
-      });
+    });
 
     defaultWeekViewState = {
         Kriya: [true, true, false, false, true, true, false],
@@ -116,10 +116,10 @@ class Nushtracker extends Component {
         var endDate = new Date(startDate);
         endDate.setDate(endDate.getDate() + 6);
         // Set format.
-        var options = {weekday: "short", month: "short", day: "numeric"};
+        var options = { weekday: "short", month: "short", day: "numeric" };
         const current_date = new Date();
         const current_year = current_date.getFullYear();
-        if (startDate.getFullYear()!==current_year || endDate.getFullYear()!==current_year) {
+        if (startDate.getFullYear() !== current_year || endDate.getFullYear() !== current_year) {
             options.year = "numeric";
         }
         // Build the week display string.
@@ -129,14 +129,16 @@ class Nushtracker extends Component {
         // Render.
         return (
             <MuiThemeProvider theme={this.theme}>
-            <div>
-                <div id="navigator">
-                    <ArrowBackIosIcon color={(this.state.olderUpdatesExist ? "primary" : "disabled")} onClick={this.gotoPrevWeek}/>
-                    <span>{currentPeriodString}</span>
-                    <ArrowForwardIosIcon color={(this.state.newerUpdatesExist ? "primary" : "disabled")} onClick={this.gotoNextWeek}/>
+                <div id="frame">
+                    <div id="content">
+                        <div id="navigator">
+                            <ArrowBackIosIcon color={(this.state.olderUpdatesExist ? "primary" : "disabled")} onClick={this.gotoPrevWeek} />
+                            <span>{currentPeriodString}</span>
+                            <ArrowForwardIosIcon color={(this.state.newerUpdatesExist ? "primary" : "disabled")} onClick={this.gotoNextWeek} />
+                        </div>
+                        <WeekView habits={this.state.currentWeekView.state} onHabitClick={this.handleHabitClick} onHabitAdd={this.handleHabitAdd} onHabitDelete={this.handleHabitDelete} />
+                    </div>
                 </div>
-                <WeekView habits={this.state.currentWeekView.state} onHabitClick={this.handleHabitClick} onHabitAdd={this.handleHabitAdd} onHabitDelete={this.handleHabitDelete} />
-            </div>
             </MuiThemeProvider>
         );
     }
