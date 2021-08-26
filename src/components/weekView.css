@@ -1,11 +1,17 @@
 table {
     table-layout: auto;
-    border: 1px solid black;
     text-overflow: ellipsis;
     width: 100%;
 }
 
-td:first-child {
-    width: 100%;
-    vertical-align: center;
-}
+.hidden {
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s 0.25s, opacity 0.25s linear;
+  }
+
+.visible {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 0.25s linear;
+  }

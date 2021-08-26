@@ -31,7 +31,7 @@ class WeekViewAddHabit extends Component {
       cells.push(<td key="add"><AddIcon color="primary" onClick={() => this.onAdd()} /></td>);
     }
     else {
-      cells.push(<td key="edit"><EditIcon color="red" onClick={() => this.onEditClick()}/></td>);
+      cells.push(<td key="edit"><EditIcon color="disabled" onClick={() => this.onEditClick()}/></td>);
     }
     return (
     <tr>
@@ -77,13 +77,14 @@ class WeekView extends Component {
       }
       if(showHeader)
       {
-        header_cells.push(<th  key="2">S</th>);
-        header_cells.push(<th  key="3">M</th>);
-        header_cells.push(<th  key="4">T</th>);
-        header_cells.push(<th  key="5">W</th>);
-        header_cells.push(<th  key="6">T</th>);
-        header_cells.push(<th  key="7">F</th>);
-        header_cells.push(<th  key="8">S</th>);
+        const visiblity_class = showEditButtons ? "hidden" : "visible"
+        header_cells.push(<th className={visiblity_class} key="2">S</th>);
+        header_cells.push(<th className={visiblity_class} key="3">M</th>);
+        header_cells.push(<th className={visiblity_class} key="4">T</th>);
+        header_cells.push(<th className={visiblity_class} key="5">W</th>);
+        header_cells.push(<th className={visiblity_class} key="6">T</th>);
+        header_cells.push(<th className={visiblity_class} key="7">F</th>);
+        header_cells.push(<th className={visiblity_class} key="8">S</th>);
       }
       return header_cells;
     };
@@ -109,7 +110,7 @@ class WeekView extends Component {
       <table>
         <thead>
           <tr>
-            {getHeader(this.state.editMode, !this.state.editMode && Object.keys(this.props.habits).length>0)}
+            {getHeader(this.state.editMode, Object.keys(this.props.habits).length>0)}
           </tr>
         </thead>
         <tbody>{habits}</tbody>
