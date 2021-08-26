@@ -7,10 +7,19 @@
     }
   }
 
+
 .common {
-    width: clamp(1em, 2em ,36px);
-    height: clamp(1em, 2em ,36px);
+    width: 2em;
+    height: 2em;
     margin: 0.5em;
+}
+
+@media (max-width: 700px) {
+    .common {
+        width: 1em;
+        height: 1em;
+        margin: 0.25em;
+    }
 }
 
 .unchecked {

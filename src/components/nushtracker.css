@@ -10,6 +10,7 @@
 #content {
     width: clamp(200px, 100%, 600px);
     margin: 1em;
+    overflow: auto;
 }
 
 #navigator {
