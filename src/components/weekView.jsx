@@ -6,6 +6,10 @@ import CloseIcon from '@material-ui/icons/Close';
 import './weekView.css';
 
 class WeekViewAddHabit extends Component {
+  constructor() {
+    super();
+    this.state = {newHabitName: ''};
+  }
   onAdd() {
     // show add dialog, hide button.
     const new_habit_name = window.prompt("Enter new habit name", "");
@@ -20,18 +24,30 @@ class WeekViewAddHabit extends Component {
     });
   };
 
-  onEditClick() {
-    this.props.onEditClick()
+  onNewHabitEnterPressed = (event) => {
+    if(event.code === 'Enter') {
+      this.props.onHabitAdd(this.state.newHabitName).then(function (result) {
+        if(result) {
+          console.log("habit added successfully.");
+        }
+        else {
+          console.log("habit add failed.");
+        }
+        event.target.value = "";
+      });
+    }
+  }
+
+  updateNewHabitName = ({target}) => {
+    this.setState({newHabitName: target.value});
   }
 
   render() {
     let cells = [];
+    cells.push(<td key="gap"/>);
     if (this.props.editMode) {
-      cells.push(<td key="cancel"><CloseIcon color="primary" onClick={() => this.onEditClick()} /></td>);
-      cells.push(<td key="add"><AddIcon color="primary" onClick={() => this.onAdd()} /></td>);
-    }
-    else {
-      cells.push(<td key="edit"><EditIcon color="disabled" onClick={() => this.onEditClick()}/></td>);
+      //cells.push(<td key="add"><AddIcon color="primary" onClick={() => this.onAdd()} /></td>);
+      cells.push(<td key="add"><input id="new-habit-box" placeholder="New habit..." type="text" onChange={this.updateNewHabitName} onKeyDown={(e) => this.onNewHabitEnterPressed(e)}/></td>)
     }
     return (
     <tr>
@@ -44,7 +60,6 @@ class WeekView extends Component {
 
   constructor() {
     super();
-    this.state = {editMode: false};
   }
 
   instance = this;
@@ -59,12 +74,6 @@ class WeekView extends Component {
 
   handleHabitDelete = async (habit_name) => {
     return this.props.onHabitDelete(habit_name);
-  }
-
-  handleEditClick = async () => {
-    var state = this.state;
-    state.editMode = !state.editMode;
-    this.setState(state);
   }
 
   render() {
@@ -99,18 +108,18 @@ class WeekView extends Component {
             habit_name: habit_name,
             completion_status: completion_status,
           }}
-          showEditButtons={this.state.editMode}
+          showEditButtons={this.props.editMode}
           onHabitClick={this.handleHabitClick}
           onHabitDelete={this.handleHabitDelete}
         />
       );
     }
-    habits.push(<WeekViewAddHabit key="add_habit" editMode={this.state.editMode} onHabitAdd={this.handleHabitAdd} onEditClick={this.handleEditClick}/>)
+    habits.push(<WeekViewAddHabit key="add_habit" editMode={this.props.editMode} onHabitAdd={this.handleHabitAdd}/>)
     return (
       <table>
         <thead>
           <tr>
-            {getHeader(this.state.editMode, Object.keys(this.props.habits).length>0)}
+            {getHeader(this.props.editMode, Object.keys(this.props.habits).length>0)}
           </tr>
         </thead>
         <tbody>{habits}</tbody>

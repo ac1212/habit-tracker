@@ -5,11 +5,44 @@ import './nushtracker.css';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import { MuiThemeProvider, createTheme } from '@material-ui/core/styles';
+import EditIcon from '@material-ui/icons/Edit';
+import CloseIcon from '@material-ui/icons/Close';
+
+class EditMenu extends Component {
+    constructor() {
+        super();
+        this.state = {
+            isMenuOpen: false
+        };
+    }
+
+    handleEditButtonClicked() {
+        var state = this.state;
+        state.isMenuOpen = !state.isMenuOpen;
+        this.setState(state);
+        this.props.handleEditButtonClicked(state.isMenuOpen);
+    }
+
+    render() {
+        if (!this.state.isMenuOpen) {
+            return (
+            <div id="edit-menu">
+                <EditIcon id="edit-button" onClick={() => this.handleEditButtonClicked()} color="disabled"/>
+            </div>
+            );
+        }
+        else {
+            return (
+                <div id="edit-menu">
+                    <CloseIcon id="edit-button" onClick={() => this.handleEditButtonClicked()} color="disabled"/>
+                </div>
+                );
+        }
+    }
+}
 
 
 class Nushtracker extends Component {
-
-
     constructor() {
         super();
         var startTime = new Date(Date.now());
@@ -22,7 +55,10 @@ class Nushtracker extends Component {
             currentWeekView: {
                 startDate: startTime,
                 state: this.defaultWeekViewState
-            }
+            },
+            isEditMode: false,
+            olderUpdatesExist: false,
+            newerUpdatesExist: false
         };
     }
 
@@ -110,6 +146,12 @@ class Nushtracker extends Component {
         await this.refreshStateFromLocalDb(nextWeekStartTime);
     }
 
+    handleEditModeChanged = (isEditMode) => {
+        var state = this.state;
+        state.isEditMode = isEditMode;
+        this.setState(state);
+    }
+
     render() {
         // Get current week.
         const startDate = this.state.currentWeekView.startDate;
@@ -136,7 +178,8 @@ class Nushtracker extends Component {
                             <span>{currentPeriodString}</span>
                             <ArrowForwardIosIcon color={(this.state.newerUpdatesExist ? "primary" : "disabled")} onClick={this.gotoNextWeek} />
                         </div>
-                        <WeekView habits={this.state.currentWeekView.state} onHabitClick={this.handleHabitClick} onHabitAdd={this.handleHabitAdd} onHabitDelete={this.handleHabitDelete} />
+                        <WeekView editMode={this.state.isEditMode} habits={this.state.currentWeekView.state} onHabitClick={this.handleHabitClick} onHabitAdd={this.handleHabitAdd} onHabitDelete={this.handleHabitDelete} />
+                        <EditMenu handleEditButtonClicked={this.handleEditModeChanged}/>
                     </div>
                 </div>
             </MuiThemeProvider>

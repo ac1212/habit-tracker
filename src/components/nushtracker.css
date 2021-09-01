@@ -9,6 +9,7 @@
 
 #content {
     width: clamp(200px, 100%, 600px);
+    height: 100%;
     margin: 1em;
     overflow: auto;
 }
@@ -19,4 +20,15 @@
     justify-content: space-between;
     margin-top: 0.5em;
     margin-bottom: 0.5em;
+}
+
+#edit-menu {
+    position: absolute;
+    bottom: 0px;
+}
+
+#edit-button {
+    border-radius: 100%;
+    background-color: #aaaaaa22;
+    padding: 0.5em;
 }
