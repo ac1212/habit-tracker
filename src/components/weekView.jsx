@@ -1,8 +1,5 @@
 import React, { Component } from "react";
 import HabitWeekly from "./habits";
-import EditIcon from '@material-ui/icons/Edit';
-import AddIcon from '@material-ui/icons/Add';
-import CloseIcon from '@material-ui/icons/Close';
 import './weekView.css';
 
 class WeekViewAddHabit extends Component {
@@ -46,7 +43,6 @@ class WeekViewAddHabit extends Component {
     let cells = [];
     cells.push(<td key="gap"/>);
     if (this.props.editMode) {
-      //cells.push(<td key="add"><AddIcon color="primary" onClick={() => this.onAdd()} /></td>);
       cells.push(<td key="add"><input id="new-habit-box" placeholder="New habit..." type="text" onChange={this.updateNewHabitName} onKeyDown={(e) => this.onNewHabitEnterPressed(e)}/></td>)
     }
     return (
