@@ -16,6 +16,7 @@
     color: #999;
     width: 100%;
     vertical-align: center;
+    text-align: left;
 }
 
 .hidden {
@@ -29,3 +30,7 @@
     opacity: 1;
     transition: opacity 0.25s linear;
   }
+
+td,th {
+  text-align: center;
+}

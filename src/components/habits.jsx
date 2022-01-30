@@ -5,6 +5,26 @@ import DeleteIcon from '@material-ui/icons/Delete';
 
 class HabitWeekly extends Component {
 
+  constructor() {
+    super();
+    this.state = {
+      width: window.innerWidth,
+      height: window.innerHeight
+    };
+  }
+
+  updateDimensions = () => {
+    this.setState({ width: window.innerWidth, height: window.innerHeight });
+  }
+
+  componentDidMount() {
+    window.addEventListener('resize', this.updateDimensions);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.updateDimensions);
+  }
+
   handleClick = (dayOfWeek, completed) => {
     this.props.onHabitClick(this.props.habit.habit_name, dayOfWeek, completed);
   }
@@ -29,16 +49,37 @@ class HabitWeekly extends Component {
           this.props.showEditButtons ? "hidden" : "visible"
         }><CheckCircle checked={cs} dayOfWeek={idx} onClick={this.handleClick}/></td>);
       });
-    return (
-      <tr>
-        {this.getEditButtons()}
-        <td id="habit-name-label">
-          {this.props.habit.habit_name}
-        </td>
-        {days}
-      </tr>
-      
-    );
+    if (this.state.width>=700) { // construct single line habit.
+      return (
+        <tr>
+          {this.getEditButtons()}
+          <td id="habit-name-label">
+            {this.props.habit.habit_name}
+          </td>
+          {days}
+        </tr>
+        
+      );
+    } else { // use 2 lines, one for title and second for status.
+      return (
+        <React.Fragment>
+        <tr>
+          {this.getEditButtons()}
+          <td colSpan="8" id="habit-name-label">
+            {this.props.habit.habit_name}
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+          {this.props.showEditButtons && <td></td>}
+          {days}
+        </tr>
+        </React.Fragment>
+        
+      );
+    }
+    
+    
   }
 }
 
